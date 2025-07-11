@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import './LandingPage.css'
 
-const LandingPage = () => {
-  const [selectedDiet, setSelectedDiet] = useState('Anything')
+const LandingPage = ({ isAuthenticated, user, onLoginClick, onSignUpClick, onLogout }) => {
+  const [selectedDiet, setSelectedDiet] = useState('Eat Everything')
   const [calories, setCalories] = useState('2000')
   const [meals, setMeals] = useState('3')
   const [carbs, setCarbs] = useState('90')
@@ -23,20 +23,34 @@ const LandingPage = () => {
     // TODO: Connect to backend API
   }
 
+  const handleLogoClick = () => {
+    // Scroll to top of the page when logo is clicked
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   return (
     <div className="landing-page">
       {/* Header */}
       <header className="header">
         <div className="container">
           <div className="logo">
-            <h1>Meal Planner</h1>
+            <h1 onClick={handleLogoClick} className="clickable-logo">Meal Planner</h1>
           </div>
           <nav className="nav">
             <a href="#how-it-works">How It Works</a>
             <a href="#supported-diets">Supported Diets</a>
             <a href="#for-professionals">For Professionals</a>
-            <button className="btn-secondary">Sign Up</button>
-            <button className="btn-primary">Sign In</button>
+            {isAuthenticated ? (
+              <div className="user-menu">
+                <span className="user-greeting">Hello, {user?.name || 'User'}!</span>
+                <button className="btn-secondary" onClick={onLogout}>Sign Out</button>
+              </div>
+            ) : (
+              <>
+                <button className="btn-secondary" onClick={onSignUpClick}>Sign Up</button>
+                <button className="btn-primary" onClick={onLoginClick}>Sign In</button>
+              </>
+            )}
           </nav>
         </div>
       </header>
@@ -180,7 +194,11 @@ const LandingPage = () => {
       {/* CTA Section */}
       <section className="cta">
         <div className="container">
-          <button className="btn-primary large">Create a free account →</button>
+          {!isAuthenticated ? (
+            <button className="btn-primary large" onClick={onSignUpClick}>Create a free account →</button>
+          ) : (
+            <button className="btn-primary large" onClick={handleGenerate}>Generate Your Meal Plan →</button>
+          )}
         </div>
       </section>
     </div>
