@@ -2,6 +2,7 @@ const { generateToken } = require("../shared/auth");
 const User = require("../models/user");
 const { StatusCodes } = require("http-status-codes");
 const user = require("../models/user");
+const { sendEmail } = require("../services/emailService");
 const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -21,7 +22,7 @@ const signup = async (req, res) => {
       email,
       password,
       emailVerificationToken: emailToken,
-      verifyTokenExpireAt: new Date(new Date().getTime() + 5 * 60 * 1000),
+      verifyTokenExpireAt: new Date(new Date().getTime() + 30 * 60 * 1000),
     });
 
     await user.save();
@@ -114,9 +115,39 @@ const verifyEmail = async (req, res) => {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error});
         }
      }
+     const refresh = async (req, res) => {
+      const { refreshToken } = req.body;
+      if (!refreshToken) {
+        return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Refresh token is required" });
+      }
+      const user = await User.findOne({ refreshToken });
+      if(user.refreshToken !== refreshToken) {
+        return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid refresh token" });
+      }
+      const newAccessToken = generateToken(user._id);
+      const newRefreshToken = generateToken(user._id, '7d');
+      user.refreshToken = newRefreshToken;
+      await user.save();
+      res.status(StatusCodes.OK).json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+     }
+     const forgetPassword = async (req, res) => { 
+      const { email } = req.body;
+      const user=await User.findOne({ email });
+      if (!user) {
+        return res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
+      }
+      const resetPasswordToken = Math.floor(100000 + Math.random() * 900000); // Generate a random 6-digit code
+    user.resetPasswordToken = resetPasswordToken;
+    user.resetPasswordTokenExpireAt = new Date(new Date().getTime() + 30 * 60 * 1000); // Token valid for 30 minutes
+  await user.save();
+     await sendEmail(email, resetPasswordToken, true);
+      res.status(StatusCodes.OK).json({ message: "Reset password token sent to email" });
+  }
 module.exports = {
   signup,
   login,
   me,
   verifyEmail,
+  refresh,
+  forgetPassword,
 };
