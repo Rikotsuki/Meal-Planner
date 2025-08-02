@@ -1,28 +1,50 @@
- const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
 const mealPlanSchema = new mongoose.Schema({
-  userId: { 
+  userId: {
     type: mongoose.Schema.Types.ObjectId, 
-    ref: "User", 
-    required: true 
+    ref: "User"
+  },
+  date :{
+    type: Date,
+    required: true,
+  },
+  totalCalories: {
+      type: Number  
   },
   meals: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Meal"
+    title: {
+      type: String,
+      required: true
+    },
+    mealLayoutIndex: {
+      type: Number,
+      required: true 
+    },
+    calories: {
+      type: Number  
+    },
+    recipe: [{
+      recipeId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Recipe",
+        required: true
+      },
+      quantity: {
+        type: Number,
+        min: 1,
+      },
+      unit: {
+        type: String,
+        required: true,
+        default: "serving"
+      },
+      eaten: {
+        type: Boolean,
+        default: false
+      }
+    }]
   }],
-  startDate: { 
-    type: Date, 
-    required: true 
-  },
-  endDate: { 
-    type: Date, 
-    required: true 
-  },
-  days: {
-    type: Number
-  }
-}, {
-  timestamps: true
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("MealPlan", mealPlanSchema);

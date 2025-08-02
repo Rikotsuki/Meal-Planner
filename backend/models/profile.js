@@ -1,8 +1,13 @@
 const mongoose = require("mongoose");
-const { act } = require("react");
+const { act, Profiler } = require("react");
 const { string, object } = require("zod");
+
 const profileSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  userId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "User", 
+    required: true 
+  },
   age: {
     type: Number,
     min: 0,
@@ -76,7 +81,6 @@ const profileSchema = new mongoose.Schema({
   carbs: {
     from: { type: Number, required: true ,min: 0, max: 1000},
     to: { type: Number, required: false,max: 1000},
-
   },
   fat: {
     from: { type: Number, required: true ,min: 0, max: 1000},
@@ -87,3 +91,5 @@ const profileSchema = new mongoose.Schema({
     to: { type: Number, required: false,max: 1000},
   },
 });
+
+module.exports = mongoose.model("Profile", profileSchema);
