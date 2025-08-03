@@ -16,4 +16,8 @@ const verfiyEmailDto= z.object({
     email:z.string().email("Invalid Emails!"),
     code:z.number().min(6).max(6),
 })
-module.exports = {loginReqDto, registerReqDto,updateUserDto,verfiyEmailDto};
+const forgetPasswordDto= z.object({
+    email:z.string().email("Invalid Passwords!"),
+    code:z.number().min(6).max(6),
+})
+module.exports = {loginReqDto, registerReqDto,updateUserDto,verfiyEmailDto,forgetPasswordDto};

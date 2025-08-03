@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { act } = require("react");
+
 const { string, object } = require("zod");
 const profileSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -87,3 +87,4 @@ const profileSchema = new mongoose.Schema({
     to: { type: Number, required: false,max: 1000},
   },
 });
+module.exports = mongoose.model("Profile", profileSchema);

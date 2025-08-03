@@ -12,7 +12,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/auth", require("./routes/auth"));
-
+app.use("/api/profile", require("./routes/profile"));
+app.use("/api/foodCategories", require("./routes/foodCategories"));
 // Basic route
 app.get("/", (req, res) => {
   res.json({ message: "Meal Planner API is running" });
