@@ -12,39 +12,44 @@ const mealPlanSchema = new mongoose.Schema({
   totalCalories: {
       type: Number  
   },
-  meals: [{
-    title: {
-      type: String,
-      required: true
-    },
-    mealLayoutIndex: {
-      type: Number,
-      required: true 
-    },
-    calories: {
-      type: Number  
-    },
-    recipe: [{
-      recipeId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Recipe",
-        required: true
-      },
-      quantity: {
-        type: Number,
-        min: 1,
-      },
-      unit: {
-        type: String,
-        required: true,
-        default: "serving"
-      },
-      eaten: {
-        type: Boolean,
-        default: false
-      }
-    }]
+  meals:  [{
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "Meal", 
+    required: true 
   }],
+  nutrition: {
+      totals: {
+        calories: Number,
+        carbs: Number,
+        fat: Number,
+        protein: Number,
+        fiber: Number,
+        sodium: Number,
+        cholesterol: Number
+      },
+      targets: {
+        calories: Number,
+        carbs: {
+          min: Number,
+          max: Number
+        },
+        fat: {
+          min:Number,
+          max: Number
+        },
+        protein: {
+          min: Number,
+          max: Number
+        },
+        fiber: Number
+      },
+      macrosPercent: {
+        fat: Number,
+        carbs: Number,
+        protein: Number
+      }
+    }
+  
 }, { timestamps: true });
 
 module.exports = mongoose.model("MealPlan", mealPlanSchema);

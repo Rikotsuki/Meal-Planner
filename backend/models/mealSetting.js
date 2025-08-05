@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const Food = require('./Food');
-const FoodCategories = require('./FoodCategories');
+const Food = require('./food');
+const FoodCategories = require('./foodCategories');
 
 const mealSettingSchema = new mongoose.Schema({
     firstDayOfWeek: {
