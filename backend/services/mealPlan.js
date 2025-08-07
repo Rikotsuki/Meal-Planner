@@ -1,7 +1,6 @@
 const {StatusCodes} = require("http-status-codes");
 const Profile = require("../models/profile");
-const callToAi = require("../shared/ai");
-const {getGenerateMealPlanPrompt} = require("../shared/prompt");
+const {getWeeklyPlan} = require("../shared/aiApi");
 const generateMealPlan = async (req, res) => {
   try {
     const userId = req.user;
@@ -11,8 +10,8 @@ const generateMealPlan = async (req, res) => {
         .status(StatusCodes.NOT_FOUND)
         .json({ message: "Profile not found" });
     }
-    const prompt = getGenerateMealPlanPrompt(profile);
-    const mealPlan = await callToAi(prompt);
+    const mealPlan = await getWeeklyPlan(profile);
+    console.log("Meal Plan:", mealPlan);
     res
       .status(StatusCodes.OK)
       .json({ message: "Meal plan generated successfully", mealPlan });
