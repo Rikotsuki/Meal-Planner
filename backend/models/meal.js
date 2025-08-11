@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const mealItemSchema = new mongoose.Schema({
+const mealSchema = new mongoose.Schema({
     name: {
         type: String,
     },
@@ -13,11 +13,16 @@ const mealItemSchema = new mongoose.Schema({
         },
         servings: {
             type: Number,
-            min: 1
+            min: 0.1
         },
         image: {
             type: String,
-        }
+        },
+        isServed: {
+            type: Boolean,
+            default: false
+        },
+        
     }]
 });
 

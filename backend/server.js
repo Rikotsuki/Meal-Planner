@@ -10,6 +10,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(function(req, res, next){
+    res.setTimeout(120000, function(){
+        console.log('Request has timed out.');
+            res.send(408);
+        });
+
+    next();
+});
+
 // Routes
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/profile", require("./routes/profile"));
@@ -36,6 +45,7 @@ app.use(
 );
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const server=app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+server.requestTimeout=600000; // Set timeout to 60 seconds
