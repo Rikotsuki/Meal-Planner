@@ -89,4 +89,36 @@ userSchema.methods.toJSON = function () {
   return user;
 };
 
+
+// BMI 
+
+userSchema.pre("save", function (next) {
+  if (this.weight && this.height) {
+    // BMI
+    const heightM = this.height / 100;
+    this.bmi = +(this.weight / (heightM * heightM)).toFixed(2);
+
+    // BMR using Mifflin-St Jeor formula
+    const bmr =
+      this.gender === "male"
+        ? 10 * this.weight + 6.25 * this.height - 5 * this.age + 5
+        : 10 * this.weight + 6.25 * this.height - 5 * this.age - 161;
+
+    // TDEE multiplier
+    const multiplier = {
+      low: 1.2,
+      moderate: 1.55,
+      high: 1.9,
+    };
+    let tdee = Math.round(bmr * (multiplier[this.activityLevel] || 1.55));
+
+    // Adjust for goal
+    if (this.goal === "lose") tdee -= 500;
+    if (this.goal === "gain") tdee += 500;
+
+    this.dailyCalories = tdee;
+  }
+  next();
+});
+
 module.exports = mongoose.model("User", userSchema);
