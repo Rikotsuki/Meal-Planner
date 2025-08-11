@@ -94,8 +94,9 @@ const AuthContainer = ({ onAuthSuccess, onBackToLanding, isAuthenticated, user, 
         throw new Error(data.message || `${formType === 'login' ? 'Login' : 'Signup'} failed`);
       }
 
-      // Store token in localStorage
-      localStorage.setItem('token', data.token);
+      // Store tokens in localStorage
+      localStorage.setItem('token', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
       localStorage.setItem('user', JSON.stringify(data.user));
 
       onAuthSuccess(data);

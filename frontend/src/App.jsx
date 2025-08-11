@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import './App.css'
 import LandingPage from './components/LandingPage'
 import AuthContainer from './components/Auth/AuthContainer'
+import SimpleDashboard from './components/Dashboard/SimpleDashboard'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -14,8 +15,16 @@ function App() {
     const savedUser = localStorage.getItem('user')
     
     if (token && savedUser) {
-      setIsAuthenticated(true)
-      setUser(JSON.parse(savedUser))
+      try {
+        setIsAuthenticated(true)
+        setUser(JSON.parse(savedUser))
+      } catch (error) {
+        console.error('Error parsing user data:', error)
+        // Clear invalid data
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        localStorage.removeItem('refreshToken')
+      }
     }
   }, [])
 
@@ -47,6 +56,17 @@ function App() {
           onAuthSuccess={handleAuthSuccess}
           onBackToLanding={handleBackToLanding}
           isAuthenticated={isAuthenticated}
+          user={user}
+          onLogout={handleLogout}
+        />
+      </div>
+    )
+  }
+
+  if (isAuthenticated) {
+    return (
+      <div className="App">
+        <SimpleDashboard 
           user={user}
           onLogout={handleLogout}
         />
