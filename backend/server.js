@@ -17,6 +17,8 @@ app.use("/api/foodCategories", require("./routes/foodCategories"));
 app.use("/api/mealPlans", require("./routes/mealPlans"));
 app.use("/api/grocery-lists", require("./routes/groceryLists"));
 app.use("/api/nutrition", require("./routes/nutrition"));
+app.use('/api/bmi', require('./routes/bmi.routes'));
+
 // Basic route
 app.get("/", (req, res) => {
   res.json({ 
