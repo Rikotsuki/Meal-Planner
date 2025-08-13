@@ -45,5 +45,5 @@ const createProfileDto = z.object({
 
 module.exports = {
   createProfileDto,
-  updateProfileDto: createProfileDto.partial(), // Allow partial updates
+  updateProfileDto: createProfileDto.partial().strict(), // Allow partial updates with no extra keys
 };

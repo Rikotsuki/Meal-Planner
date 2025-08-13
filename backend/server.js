@@ -23,7 +23,7 @@ app.use(function(req, res, next){
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/profile", require("./routes/profile"));
 app.use("/api/foodCategories", require("./routes/foodCategories"));
-app.use("/api/mealPlans", require("./routes/mealPlans"));
+app.use("/api/mealPlan", require("./routes/mealPlan"));
 app.use("/api/grocery-lists", require("./routes/groceryLists"));
 app.use("/api/nutrition", require("./routes/nutrition"));
 app.use('/api/bmi', require('./routes/bmi.routes'));

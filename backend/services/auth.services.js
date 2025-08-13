@@ -212,6 +212,40 @@ const logout = async (req, res) => {
   }
 };
 
+const updatePersonalInfo = async (req, res) => {
+  try {
+    const userId = req.user;
+    const { name, email, avatar } = req.body;
+
+    
+
+    // Find user and update personal info
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { name, email, avatar },
+      { new: true, runValidators: true }
+    );
+
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
+    }
+
+    res.status(StatusCodes.OK).json({
+      message: "Personal info updated successfully",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        emailVerifiedAt: user.emailVerifiedAt
+      }
+    });
+}catch(error) {
+    console.error("Update personal info error:", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
+  }
+}
+
 module.exports = {
   signup,
   login,
@@ -220,4 +254,5 @@ module.exports = {
   refresh,
   forgetPassword,
   logout,
+  updatePersonalInfo,
 };

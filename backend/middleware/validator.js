@@ -1,7 +1,7 @@
 const {StatusCodes} = require("http-status-codes")
 const validate = (schema) => async (req, res, next) => {
    try {
-      await schema.parse(req.body, { abortEarly: false })
+      await schema.safeParse(req.body, { abortEarly: false,whitelist: true });
       next();
    } catch (error) {
       const original = error.issues;

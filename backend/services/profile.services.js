@@ -38,7 +38,23 @@ const updateProfile = async (req, res) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Error updating profile", error });
     }
 }
+
+const getProfile = async (req, res) => {
+    try {
+        const userId = req.user;
+
+        const profile = await Profile.findOne({ userId }).populate("userId", "name email avatar");
+        if (!profile) {
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Profile not found" });
+        }
+        return res.status(StatusCodes.OK).json({ profile });
+}catch (error) {
+        console.error(error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Error retrieving profile", error });
+}
+    }
 module.exports={
     createProfile,
     updateProfile,
+    getProfile
 }
