@@ -23,11 +23,18 @@ app.use(function(req, res, next){
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/profile", require("./routes/profile"));
 app.use("/api/foodCategories", require("./routes/foodCategories"));
-app.use("/api/mealPlan", require("./routes/mealPlan"));
+app.use("/api/mealPlans", require("./routes/mealPlans"));
+app.use("/api/grocery-lists", require("./routes/groceryLists"));
+app.use("/api/nutrition", require("./routes/nutrition"));
+app.use('/api/bmi', require('./routes/bmi.routes'));
 
 // Basic route
 app.get("/", (req, res) => {
-  res.json({ message: "Meal Planner API is running" });
+  res.json({ 
+    message: "Meal Planner API is running",
+    jwtSecret: process.env.JWT_SECRET ? "Set" : "Not Set",
+    mongoUri: process.env.MONGODB_URI ? "Set" : "Not Set"
+  });
 });
 
 // Error handling middleware

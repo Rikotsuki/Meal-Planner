@@ -3,53 +3,37 @@ const mongoose = require("mongoose");
 const mealPlanSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId, 
-    ref: "User"
+    ref: "User",
+    required: true
   },
-  date :{
+  name: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String
+  },
+  startDate: {
     type: Date,
-    required: true,
+    required: true
   },
-  totalCalories: {
-      type: Number  
+  endDate: {
+    type: Date,
+    required: true
   },
-  meals:  [{
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: "Meal", 
-    required: true 
-  }],
-  nutrition: {
-      totals: {
-        calories: Number,
-        carbs: Number,
-        fat: Number,
-        protein: Number,
-        fiber: Number,
-        sodium: Number,
-        cholesterol: Number
-      },
-      targets: {
-        calories: Number,
-        carbs: {
-          min: Number,
-          max: Number
-        },
-        fat: {
-          min:Number,
-          max: Number
-        },
-        protein: {
-          min: Number,
-          max: Number
-        },
-        fiber: Number
-      },
-      macrosPercent: {
-        fat: Number,
-        carbs: Number,
-        protein: Number
-      }
-    }
-  
+  preferences: {
+    diet: String,
+    calories: String,
+    meals: String,
+    carbs: String,
+    fat: String,
+    protein: String
+  },
+  mealNames: [String], // Store only meal names to save storage space
+  dailyPlans: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "DailyNutrition"
+  }]
 }, { timestamps: true });
 
 module.exports = mongoose.model("MealPlan", mealPlanSchema);

@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { calculateUserBMI } = require('../services/bmi.services');
-const User = require('../models/User');
+const User = require('../models/user');
 
 // POST /api/bmi/calculate
 router.post('/calculate', async (req, res) => {

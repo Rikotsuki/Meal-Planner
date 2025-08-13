@@ -53,16 +53,27 @@ const userSchema = new mongoose.Schema(
       default: null,
       required: false,
     },
-    verifyTokenExpireAt:{
+    verifyTokenExpireAt: {
       type: Date,
       default: null,
       required: false,
-    }
+    },
+
+    // 🆕 BMI-related fields
+    height: { type: Number, required: false },
+    weight: { type: Number, required: false },
+    age: { type: Number, required: false },
+    gender: { type: String, enum: ['male', 'female'], required: false },
+    activityLevel: { type: String, enum: ['low', 'moderate', 'high'], required: false },
+    goal: { type: String, enum: ['lose', 'gain', 'maintain'], required: false },
+    bmi: { type: Number, required: false },
+    dailyCalories: { type: Number, required: false }
   },
   {
     timestamps: true,
   }
 );
+
 
 // Hash password before saving
 userSchema.pre("save", async function (next) {

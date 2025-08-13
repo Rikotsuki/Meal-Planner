@@ -61,6 +61,13 @@ const login = async (req, res) => {
       message: "Login successful",
       accessToken,
       refreshToken,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        emailVerifiedAt: user.emailVerifiedAt
+      }
     });
   } catch (error) {
     console.error("Login error:", error);
@@ -118,6 +125,13 @@ const verifyEmail = async (req, res) => {
       message: "Email verified successfully",
       accessToken,
       refreshToken,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        emailVerifiedAt: user.emailVerifiedAt
+      }
     });
   } catch (error) {
     console.log(error);
