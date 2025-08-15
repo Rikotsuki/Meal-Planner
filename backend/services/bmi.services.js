@@ -1,22 +1,23 @@
-// services/bmi.services.js
+// backend/services/bmi.services.js
 const User = require('../models/user');
 
 function calculateBMI(weightKg, heightCm) {
+  if (!weightKg || !heightCm) return null;
   const heightM = heightCm / 100;
   return +(weightKg / (heightM * heightM)).toFixed(2);
 }
 
 function calculateTDEE(bmr, activityLevel) {
-  const multiplier = {
-    low: 1.2,
-    moderate: 1.55,
-    high: 1.9
-  };
+  const multiplier = { low: 1.2, moderate: 1.55, high: 1.9 };
+  if (typeof bmr !== 'number') return null;
   return Math.round(bmr * (multiplier[activityLevel] || 1.55));
 }
 
 async function calculateUserBMI(user) {
-  if (!user.height || !user.weight) return user;
+  if (!user.height || !user.weight) {
+    await user.save(); // persist possible goal/activity changes
+    return user;
+  }
 
   user.bmi = calculateBMI(user.weight, user.height);
 
@@ -34,4 +35,4 @@ async function calculateUserBMI(user) {
   return user;
 }
 
-module.exports = { calculateUserBMI };
+module.exports = { calculateBMI, calculateTDEE, calculateUserBMI };
