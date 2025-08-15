@@ -27,15 +27,26 @@ const groceryListSchema = new mongoose.Schema({
     },
     unit: {
       type: String,
-      required: true
+      // required: true,   
+      default: ""         
     },
     aisle: {
       type: String,
+
+      
       default: "General"
     },
     mealName: {
       type: String,
-      required: true
+      default: ""
+    },
+    mealNames: {
+      type: [String], 
+      default:[]
+    },
+    mealCount: {
+      type : Number,
+      default:""
     }
   }],
   totalItems: {
