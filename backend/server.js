@@ -26,7 +26,7 @@ app.use("/api/foodCategories", require("./routes/foodCategories"));
 app.use("/api/mealPlan", require("./routes/mealPlan"));
 app.use("/api/grocery-lists", require("./routes/groceryLists"));
 app.use("/api/nutrition", require("./routes/nutrition"));
-app.use('/api/bmi', require('./routes/bmi.routes'));
+app.use('/api/bmi', require('./routes/bmi'));
 
 // Basic route
 app.get("/", (req, res) => {
