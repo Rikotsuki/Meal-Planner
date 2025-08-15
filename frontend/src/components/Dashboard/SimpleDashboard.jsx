@@ -1,16 +1,123 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { mealPlanAPI, nutritionAPI, groceryListAPI, profileAPI } from '../../services/api';
+const join = (base, path) =>
+  `${String(base).replace(/\/+$/,'')}/${String(path).replace(/^\/+/,'')}`;
+
+const API_BASE = join(import.meta?.env?.VITE_BACKEND_URL || 'http://localhost:5000', '/api');
 
 const SimpleDashboard = ({ user, onLogout }) => {
-  const [activeTab, setActiveTab] = useState('generator');
+ 
 
+  const [activeTab, setActiveTab] = useState('generator');
+  const [bmiLoading, setBmiLoading] = useState(false);
+  const [bmiError, setBmiError] = useState('');
+  
   const tabs = [
+    { id: 'bmi',       label: 'BMI Calculator',            icon: '⚖️' },
+
     { id: 'generator', label: 'Meal Generator', icon: '🍽️' },
     { id: 'history', label: 'My Plans', icon: '📅' },
     { id: 'nutrition', label: 'Nutrition', icon: '📊' },
+   
+
     { id: 'grocery', label: 'Grocery Lists', icon: '🛒' },
     { id: 'profile', label: 'Profile', icon: '👤' },
   ];
+
+  // ---- BMI helpers (pure frontend) ----
+  const BMI_DEFAULTS = { height: 170, weight: 70, age: 25, gender: 'male', activity: 'moderate', goal: 'maintain' };
+
+  function calcBMI(weightKg, heightCm) {
+    if (!weightKg || !heightCm) return null;
+    const m = heightCm / 100;
+    return +(weightKg / (m * m)).toFixed(2);
+  }
+  function calcBMR({ gender, weight, height, age }) {
+    if (!weight || !height || !age) return null;
+    return gender === 'male'
+      ? 10 * weight + 6.25 * height - 5 * age + 5
+      : 10 * weight + 6.25 * height - 5 * age - 161;
+  }
+  function calcTDEE(bmr, activity) {
+    if (!bmr) return null;
+    const mult = { low: 1.2, moderate: 1.55, high: 1.9 };
+    return Math.round(bmr * (mult[activity] || 1.55));
+  }
+  function calcTargetCalories(tdee, goal) {
+    if (!tdee) return null;
+    if (goal === 'lose') return tdee - 500;
+    if (goal === 'gain') return tdee + 500;
+    return tdee;
+  }
+  function bmiCategory(bmi) {
+    if (typeof bmi !== 'number') return '';
+    if (bmi < 18.5) return 'Underweight';
+    if (bmi < 25)   return 'Normal';
+    if (bmi < 30)   return 'Overweight';
+    return 'Obese';
+  }
+
+// ---- BMI STARTS
+
+const [bmiForm, setBmiForm] = useState(() => {
+  try {
+    return JSON.parse(localStorage.getItem('bmiForm')) || BMI_DEFAULTS;
+  } catch { return BMI_DEFAULTS; }
+});
+const [bmiResult, setBmiResult] = useState(null);
+
+const updateBmi = (k, v) =>
+  setBmiForm(prev => {
+    const next = { ...prev, [k]: v };
+    // persist locally so it pre-fills next time
+    try { localStorage.setItem('bmiForm', JSON.stringify(next)); } catch {}
+    return next;
+  });
+
+  async function computeBMI(e) {
+    e?.preventDefault?.();
+    setBmiResult(null);
+  
+    try {
+      const token = localStorage.getItem('token');
+      const base = import.meta?.env?.VITE_BACKEND_URL || 'http://localhost:5000/api';
+      const res = await fetch(`${base}/bmi`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          goal: bmiForm.goal,
+          activityLevel: bmiForm.activity,
+          height: Number(bmiForm.height),
+          weight: Number(bmiForm.weight),
+          age: Number(bmiForm.age),
+          gender: bmiForm.gender
+        })
+      });
+  
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+      const data = await res.json();
+      const m = data.metrics || {};
+      setBmiResult({
+        bmi:   m.bmi ?? data.user?.bmi,
+        bmr:   m.bmr,
+        tdee:  m.tdee,
+        daily: m.dailyCalories ?? data.user?.dailyCalories
+      });
+    } catch (err) {
+      alert(err.message || 'BMI request failed');
+    }
+  }
+  
+  
+
+
+
+
+const bmiCat = useMemo(() => bmiCategory(bmiResult?.bmi), [bmiResult]);
+// BMI ENDS 
 
   const [preferences, setPreferences] = useState({
     diet: 'Eat Everything',
@@ -426,6 +533,152 @@ const SimpleDashboard = ({ user, onLogout }) => {
 
   const renderContent = () => {
     switch (activeTab) {
+      case 'bmi': {
+        return (
+          <div style={{ color: 'white' }}>
+            <h6 style={{ marginBottom: '1.5rem', fontSize: '1.5rem' }}>Set your goal, track your progress, and watch yourself win!
+            </h6>
+      
+            {/* Form */}
+<form onSubmit={computeBMI} style={{ 
+  display: 'grid', 
+  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+  gap: '1rem', 
+  marginBottom: '1.25rem'
+}}>
+  <div style={{ marginRight: '2rem' }}>
+  <label style={{ display: 'flex', flexDirection: 'column', gap: '.4rem' }}>
+    <span>Height (cm)</span>
+    <input type="number" value={bmiForm.height}
+      onChange={(e)=>updateBmi('height', e.target.value)}
+      style={{ background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', color:'white', padding:'.7rem', borderRadius:8 }} />
+  </label>
+  <label style={{ display: 'flex', flexDirection: 'column', gap: '.4rem' }}>
+    <span>Weight (kg)</span>
+    <input type="number" value={bmiForm.weight}
+      onChange={(e)=>updateBmi('weight', e.target.value)}
+      style={{ background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', color:'white', padding:'.7rem', borderRadius:8 }} />
+  </label>
+  <label style={{ display: 'flex', flexDirection: 'column', gap: '.4rem' }}>
+    <span>Age</span>
+    <input type="number" value={bmiForm.age}
+      onChange={(e)=>updateBmi('age', e.target.value)}
+      style={{ background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', color:'white', padding:'.7rem', borderRadius:8 }} />
+  </label>
+  </div>
+  <div>
+  <label style={{ display: 'flex', flexDirection: 'column', gap: '.4rem'}}>
+    <span>Gender</span>
+    <select value={bmiForm.gender} onChange={(e)=>updateBmi('gender', e.target.value)}
+      style={{ background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', color:'white', padding:'7rem',  fontSize: '1.2rem', lineHeight: '1.5' , borderRadius:8 }}>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+  </label>
+  <label style={{ display: 'flex', flexDirection: 'column', gap: '.4rem' }}>
+    <span>Activity</span>
+    <select value={bmiForm.activity} onChange={(e)=>updateBmi('activity', e.target.value)}
+      style={{ background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', color:'white', padding:'.7rem',fontSize: '1.2rem', lineHeight: '1.5', borderRadius:8 }}>
+      <option value="low">Low</option>
+      <option value="moderate">Moderate</option>
+      <option value="high">High</option>
+    </select>
+  </label>
+  <label style={{ display: 'flex', flexDirection: 'column', gap: '.4rem' }}>
+    <span>Goal</span>
+    <select value={bmiForm.goal} onChange={(e)=>updateBmi('goal', e.target.value)}
+      style={{ background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', color:'white', padding:'.7rem',fontSize: '1.2rem', lineHeight: '1.5', borderRadius:8 }}>
+      <option value="lose">Lose</option>
+      <option value="maintain">Maintain</option>
+      <option value="gain">Gain</option>
+    </select>
+  </label>
+  </div>
+</form>
+
+{/* Calculate Button - now separate and bigger */}
+<div style={{ marginTop: '1rem', textAlign: 'center', paddingBottom:'1rem' }}>
+  <button 
+    type="submit"
+    onClick={computeBMI}
+    style={{ 
+      background:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+      color:'white', 
+      border:'none', 
+      padding:'1rem 2rem', 
+      borderRadius:12, 
+      fontWeight:600,
+      fontSize: '1.1rem',
+      minWidth: '200px'
+    }}
+  >
+    Calculate
+  </button>
+</div>
+
+      
+            {/* Results */}
+            {bmiResult && (
+  <div
+    style={{
+      background: 'rgba(255,255,255,0.08)',
+      borderRadius: 12,
+      padding: '1rem',
+      border: '1px solid rgba(255,255,255,0.1)'
+    }}
+  >
+    {/* Cheerful message */}
+    <div style={{ marginBottom: '1rem', fontSize: '1rem', fontWeight: '500', color: '#ffda79' }}>
+      {bmiCat === 'Underweight' && "🌱 You're lighter than average — focus on healthy nourishment!"}
+      {bmiCat === 'Normal' && "💪 You're right on track! Keep up the great balance."}
+      {bmiCat === 'Overweight' && "🌟 Small steps lead to big changes — you've got this!"}
+      {bmiCat === 'Obese' && "❤️ Your health matters — every day is a new chance to improve."}
+    </div>
+
+    {/* Results grid */}
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+        gap: '.75rem'
+      }}
+    >
+      <div>
+        <div style={{ opacity: 0.8 }}>BMI</div>
+        <div style={{ fontWeight: 700, fontSize: '1.2rem' }}>
+          {bmiResult.bmi ?? '—'}
+        </div>
+      </div>
+      <div>
+        <div style={{ opacity: 0.8 }}>Category</div>
+        <div style={{ fontWeight: 700, fontSize: '1.2rem' }}>{bmiCat || '—'}</div>
+      </div>
+      <div>
+        <div style={{ opacity: 0.8 }}>BMR</div>
+        <div style={{ fontWeight: 700, fontSize: '1.2rem' }}>{bmiResult.bmr ?? '—'}</div>
+      </div>
+      <div>
+        <div style={{ opacity: 0.8 }}>TDEE</div>
+        <div style={{ fontWeight: 700, fontSize: '1.2rem' }}>{bmiResult.tdee ?? '—'}</div>
+      </div>
+      <div>
+        <div style={{ opacity: 0.8 }}>Daily Calories</div>
+        <div style={{ fontWeight: 700, fontSize: '1.2rem' }}>
+          {bmiResult.daily ?? '—'}
+        </div>
+      </div>
+    </div>
+    <div style={{ opacity: 0.75, fontSize: '.9rem', marginTop: '.5rem' }}>
+      * “Daily Calories” reflects your goal (−500 for lose, +500 for gain).
+    </div>
+  </div>
+)}
+
+          </div>
+        );
+      }
+      
+
       case 'generator':
         return (
           <div style={{ color: 'white' }}>
@@ -891,6 +1144,8 @@ const SimpleDashboard = ({ user, onLogout }) => {
             </div>
           </div>
         );
+   
+
       case 'grocery':
         return (
           <div style={{ color: 'white' }}>
@@ -1327,9 +1582,9 @@ const SimpleDashboard = ({ user, onLogout }) => {
             <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '2rem', fontWeight: '700' }}>
               {tabs.find(tab => tab.id === activeTab)?.label}
             </h2>
-            <p style={{ color: 'rgba(255, 255, 255, 0.8)', marginBottom: '2rem', fontSize: '1.1rem' }}>
+            <div style={{ color: 'rgba(255, 255, 255, 0.8)', marginBottom: '2rem', fontSize: '1.1rem' }}>
               {renderContent()}
-            </p>
+            </div>
           </div>
         </div>
       </main>
