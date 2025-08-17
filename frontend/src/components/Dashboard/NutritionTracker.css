@@ -61,62 +61,64 @@
   font-size: 0.95rem;
 }
 
-.form-group input {
+.nutrition-tracker .form-group input {
   background: rgba(255, 255, 255, 0.15);
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 12px;
   padding: 1rem;
-  color: #ffffff;
+  color: #ffffff !important;
   font-size: 1rem;
   outline: none;
   transition: all 0.3s ease;
   font-weight: 500;
 }
 
-.form-group input:focus {
+.nutrition-tracker .form-group input:focus {
   background: rgba(255, 255, 255, 0.2);
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
   transform: translateY(-1px);
+  color: #ffffff !important;
 }
 
-.form-group input:hover {
+.nutrition-tracker .form-group input:hover {
   background: rgba(255, 255, 255, 0.18);
   border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff !important;
 }
 
-.form-group input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
+.nutrition-tracker .form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
   font-weight: 400;
 }
 
 /* Ensure text remains visible when typing */
-.form-group input:not(:placeholder-shown) {
-  color: #ffffff;
+.nutrition-tracker .form-group input:not(:placeholder-shown) {
+  color: #ffffff !important;
   font-weight: 600;
 }
 
 /* Additional input styling for better UX */
-.form-group input[type="number"] {
-  -moz-appearance: textfield;
+.nutrition-tracker .form-group input[type="number"] {
+  appearance: textfield;
 }
 
-.form-group input[type="number"]::-webkit-outer-spin-button,
-.form-group input[type="number"]::-webkit-inner-spin-button {
+.nutrition-tracker .form-group input[type="number"]::-webkit-outer-spin-button,
+.nutrition-tracker .form-group input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
 /* Selection styling */
-.form-group input::selection {
+.nutrition-tracker .form-group input::selection {
   background: rgba(102, 126, 234, 0.3);
   color: #ffffff;
 }
 
 /* Autofill styling */
-.form-group input:-webkit-autofill,
-.form-group input:-webkit-autofill:hover,
-.form-group input:-webkit-autofill:focus {
+.nutrition-tracker .form-group input:-webkit-autofill,
+.nutrition-tracker .form-group input:-webkit-autofill:hover,
+.nutrition-tracker .form-group input:-webkit-autofill:focus {
   -webkit-text-fill-color: #ffffff;
   -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.15) inset;
   transition: background-color 5000s ease-in-out 0s;

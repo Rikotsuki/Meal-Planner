@@ -186,6 +186,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background: #f8f9fa;
   font-weight: 500;
+  color: #333 !important;
 }
 
 .form-group input:focus {
@@ -194,6 +195,7 @@
   background: white;
   box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
   transform: translateY(-1px);
+  color: #333 !important;
 }
 
 .form-group input.error {
