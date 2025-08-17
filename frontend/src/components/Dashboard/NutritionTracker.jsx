@@ -72,26 +72,31 @@ const NutritionTracker = () => {
       
       setMessage("Nutrition data saved successfully!");
       
-      // Create the saved data object BEFORE clearing the form
+      // Get existing data for today to add to it
+      const existingData = nutritionHistory.find(item => item.date === today);
+      
+      // Create the saved data object by ADDING to existing data
       const savedData = {
         date: today,
-        calories: Number(nutritionData.calories) || 0,
-        carbs: Number(nutritionData.carbs) || 0,
-        protein: Number(nutritionData.protein) || 0,
-        fat: Number(nutritionData.fat) || 0,
-        fiber: Number(nutritionData.fiber) || 0,
-        sodium: Number(nutritionData.sodium) || 0,
-        cholesterol: Number(nutritionData.cholesterol) || 0
+        calories: (Number(existingData?.calories) || 0) + (Number(nutritionData.calories) || 0),
+        carbs: (Number(existingData?.carbs) || 0) + (Number(nutritionData.carbs) || 0),
+        protein: (Number(existingData?.protein) || 0) + (Number(nutritionData.protein) || 0),
+        fat: (Number(existingData?.fat) || 0) + (Number(nutritionData.fat) || 0),
+        fiber: (Number(existingData?.fiber) || 0) + (Number(nutritionData.fiber) || 0),
+        sodium: (Number(existingData?.sodium) || 0) + (Number(nutritionData.sodium) || 0),
+        cholesterol: (Number(existingData?.cholesterol) || 0) + (Number(nutritionData.cholesterol) || 0)
       };
       
-      console.log("Created saved data object:", savedData);
+      console.log("Existing data:", existingData);
+      console.log("New data to add:", nutritionData);
+      console.log("Combined saved data:", savedData);
       
       // Set pending save data to show immediately after form clear
       setPendingSaveData(savedData);
       
-      // Immediately add the saved data to nutritionHistory for instant display
+      // Immediately update the nutritionHistory for instant display
       setNutritionHistory(prev => {
-        // Remove any existing entry for today and add the new one
+        // Remove any existing entry for today and add the updated one
         const filtered = prev.filter(item => item.date !== today);
         const updated = [savedData, ...filtered];
         console.log("Updated nutrition history:", updated);

@@ -31,7 +31,29 @@ router.post("/daily", auth, async (req, res) => {
     // Convert date string to Date object
     const dateObj = new Date(date);
     
-    // Use upsert to update existing record or create new one
+    // First, find existing data for today
+    const existingData = await DailyMealPlan.findOne({
+      userId: req.user,
+      date: { 
+        $gte: new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()),
+        $lt: new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate() + 1)
+      }
+    });
+    
+    // Calculate new totals by adding to existing data
+    const newCalories = (existingData?.nutrition?.totals?.calories || 0) + (Number(calories) || 0);
+    const newCarbs = (existingData?.nutrition?.totals?.carbs || 0) + (Number(carbs) || 0);
+    const newFat = (existingData?.nutrition?.totals?.fat || 0) + (Number(fat) || 0);
+    const newProtein = (existingData?.nutrition?.totals?.protein || 0) + (Number(protein) || 0);
+    const newFiber = (existingData?.nutrition?.totals?.fiber || 0) + (Number(fiber) || 0);
+    const newSodium = (existingData?.nutrition?.totals?.sodium || 0) + (Number(sodium) || 0);
+    const newCholesterol = (existingData?.nutrition?.totals?.cholesterol || 0) + (Number(cholesterol) || 0);
+    
+    console.log("Existing data:", existingData?.nutrition?.totals);
+    console.log("New data to add:", { calories, carbs, fat, protein, fiber, sodium, cholesterol });
+    console.log("Combined totals:", { newCalories, newCarbs, newFat, newProtein, newFiber, newSodium, newCholesterol });
+    
+    // Use upsert to update existing record or create new one with accumulated values
     const dailyNutrition = await DailyMealPlan.findOneAndUpdate(
       { 
         userId: req.user, 
@@ -43,16 +65,16 @@ router.post("/daily", auth, async (req, res) => {
       {
         userId: req.user,
         date: dateObj,
-        caloriesTotal: Number(calories) || 0,
+        caloriesTotal: newCalories,
         nutrition: {
           totals: {
-            calories: Number(calories) || 0,
-            carbs: Number(carbs) || 0,
-            fat: Number(fat) || 0,
-            protein: Number(protein) || 0,
-            fiber: Number(fiber) || 0,
-            sodium: Number(sodium) || 0,
-            cholesterol: Number(cholesterol) || 0
+            calories: newCalories,
+            carbs: newCarbs,
+            fat: newFat,
+            protein: newProtein,
+            fiber: newFiber,
+            sodium: newSodium,
+            cholesterol: newCholesterol
           }
         }
       },
