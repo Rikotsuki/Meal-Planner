@@ -1,86 +1,53 @@
 const mongoose = require("mongoose");
 
 const nutritionSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
     date: {
         type: Date,
         required: true,
     },
     caloriesTotal: {
         type: Number,
+        default: 0
     },
-    meals: [{
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: "Meal", 
-        required: true 
-    }],
     nutrition: {
         totals: {
             calories: {
                 type: Number,
+                default: 0
             },
             carbs:{
                 type: Number,
+                default: 0
             },
             fat: {
                 type: Number,
+                default: 0
             },
             protein: {
                 type: Number,
+                default: 0
             },
             fiber: {
                 type: Number,
+                default: 0
             },
             sodium: {
                 type: Number,
+                default: 0
             },
             cholesterol: {
                 type: Number,
+                default: 0
             },
-        },
-        targets: {
-            calories: {
-                type: Number,
-            },
-            carbs: {
-                min: {
-                    type: Number,
-                },
-                max: {
-                    type: Number,
-                },
-            },
-            fat: {
-                min: {
-                    type: Number,
-                },
-                max: {
-                    type: Number,
-                },
-            },
-            protein: {
-                min: {
-                    type: Number,
-                },
-                max: {
-                    type: Number,
-                },
-            },
-            fiber: {
-                type: Number,
-            },
-        },
-        macrosPercent: {
-            fat: {
-                type: Number,
-            },
-            carbs: {
-                type: Number,
-            },
-            protein: {
-                type: Number,
-            },
-        },
+        }
     }
+}, {
+    timestamps: true
 });
 
 module.exports = mongoose.model("DailyNutrition", nutritionSchema);

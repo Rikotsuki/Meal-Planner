@@ -179,8 +179,8 @@
   padding: 0.75rem 1rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  background: rgba(243, 238, 238, 0.1);
+  color: rgb(255, 255, 255);
   font-size: 1rem;
   backdrop-filter: blur(10px);
 }
@@ -194,6 +194,54 @@
 .meal-plan-select option {
   background: #2c3e50;
   color: white;
+}
+
+/* Fix placeholder text color to be white */
+.meal-plan-select:invalid,
+.meal-plan-select option[value=""] {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Ensure selected text is always white */
+.meal-plan-select {
+  color: white !important;
+}
+
+.meal-plan-select:focus {
+  color: white !important;
+}
+
+/* Target the placeholder specifically */
+.meal-plan-select option[disabled] {
+  color: rgba(255, 255, 255, 0.7) !important;
+  background: #2c3e50;
+}
+
+/* Force white color for all text in the select */
+.meal-plan-select,
+.meal-plan-select * {
+  color: white !important;
+}
+
+/* Target the first option (placeholder) specifically */
+.meal-plan-select option:first-child {
+  color: rgba(255, 255, 255, 0.7) !important;
+  background: #2c3e50;
+}
+
+/* Ensure all options have white text */
+.meal-plan-select option {
+  color: white !important;
+  background: #2c3e50;
+}
+
+/* Target the select element itself more aggressively */
+select.meal-plan-select {
+  color: white !important;
+}
+
+select.meal-plan-select option {
+  color: white !important;
 }
 
 .generate-btn {

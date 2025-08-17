@@ -51,12 +51,7 @@ const GroceryLists = () => {
       setIsGenerating(true);
       setError("");
 
-      /**
-       * IMPORTANT: This should call your backend route:
-       * POST /api/grocery/from-meal-plan/:mealPlanId
-       * If your service is different, ensure it hits that path param form.
-       */
-      const res = await groceryListAPI.createFromMealPlan(selectedMealPlan);
+      const res = await groceryListAPI.createGroceryList(selectedMealPlan);
 
       // Put newest at the top
       setGroceryLists((prev) => [res.data, ...prev]);

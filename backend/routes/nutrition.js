@@ -4,29 +4,66 @@ const DailyMealPlan = require("../models/dailyMealPlan");
 
 const router = express.Router();
 
+// Test endpoint to verify database connection
+router.get("/test", async (req, res) => {
+  try {
+    // Test database connection by counting documents
+    const count = await DailyMealPlan.countDocuments();
+    res.json({ 
+      message: "Database connection successful", 
+      documentCount: count,
+      modelName: DailyMealPlan.modelName
+    });
+  } catch (error) {
+    console.error("Database test error:", error);
+    res.status(500).json({ 
+      message: "Database connection failed", 
+      error: error.message 
+    });
+  }
+});
+
 // Track daily nutrition
 router.post("/daily", auth, async (req, res) => {
   try {
     const { date, calories, carbs, fat, protein, fiber, sodium, cholesterol } = req.body;
     
-    const dailyNutrition = new DailyMealPlan({
-      userId: req.user,
-      date,
-      caloriesTotal: calories,
-      nutrition: {
-        totals: {
-          calories,
-          carbs,
-          fat,
-          protein,
-          fiber,
-          sodium,
-          cholesterol
+    // Convert date string to Date object
+    const dateObj = new Date(date);
+    
+    // Use upsert to update existing record or create new one
+    const dailyNutrition = await DailyMealPlan.findOneAndUpdate(
+      { 
+        userId: req.user, 
+        date: { 
+          $gte: new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()),
+          $lt: new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate() + 1)
         }
+      },
+      {
+        userId: req.user,
+        date: dateObj,
+        caloriesTotal: Number(calories) || 0,
+        nutrition: {
+          totals: {
+            calories: Number(calories) || 0,
+            carbs: Number(carbs) || 0,
+            fat: Number(fat) || 0,
+            protein: Number(protein) || 0,
+            fiber: Number(fiber) || 0,
+            sodium: Number(sodium) || 0,
+            cholesterol: Number(cholesterol) || 0
+          }
+        }
+      },
+      { 
+        upsert: true, 
+        new: true,
+        setDefaultsOnInsert: true
       }
-    });
+    );
 
-    await dailyNutrition.save();
+    console.log("Nutrition saved successfully:", dailyNutrition);
     res.status(201).json(dailyNutrition);
   } catch (error) {
     console.error("Track daily nutrition error:", error);
@@ -50,7 +87,20 @@ router.get("/history", auth, async (req, res) => {
     const nutritionHistory = await DailyMealPlan.find(query)
       .sort({ date: -1 });
     
-    res.json(nutritionHistory);
+    // Format the data for frontend consumption
+    const formattedHistory = nutritionHistory.map(item => ({
+      date: item.date.toISOString().split('T')[0], // Format as YYYY-MM-DD
+      calories: item.nutrition.totals.calories || 0,
+      carbs: item.nutrition.totals.carbs || 0,
+      fat: item.nutrition.totals.fat || 0,
+      protein: item.nutrition.totals.protein || 0,
+      fiber: item.nutrition.totals.fiber || 0,
+      sodium: item.nutrition.totals.sodium || 0,
+      cholesterol: item.nutrition.totals.cholesterol || 0
+    }));
+    
+    console.log("Nutrition history fetched:", formattedHistory.length, "records");
+    res.json(formattedHistory);
   } catch (error) {
     console.error("Get nutrition history error:", error);
     res.status(500).json({ message: "Error fetching nutrition history" });

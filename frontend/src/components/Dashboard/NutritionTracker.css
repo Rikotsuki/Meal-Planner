@@ -1,59 +1,52 @@
 .nutrition-tracker {
   color: white;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.tracker-container {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 2rem;
+.tracker-header {
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
-.tracker-container h2 {
-  margin: 0 0 0.5rem 0;
-  font-size: 2rem;
+.tracker-header h2 {
+  font-size: 2.5rem;
   font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .tracker-subtitle {
   color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 2rem;
   font-size: 1.1rem;
+  margin: 0;
 }
 
-.tracker-content {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.add-nutrition-section,
-.nutrition-summary-section,
-.nutrition-history-section {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 1.5rem;
+/* Daily Nutrition Section */
+.daily-nutrition {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.add-nutrition-section h3,
-.nutrition-summary-section h3,
-.nutrition-history-section h3 {
+.daily-nutrition h3 {
   margin: 0 0 1.5rem 0;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-weight: 600;
+  color: white;
 }
 
 .nutrition-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .form-group {
@@ -69,21 +62,64 @@
 }
 
 .form-group input {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  padding: 0.75rem;
-  color: white;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 1rem;
+  color: #ffffff;
   font-size: 1rem;
   outline: none;
+  transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .form-group input:focus {
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  transform: translateY(-1px);
+}
+
+.form-group input:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .form-group input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+}
+
+/* Ensure text remains visible when typing */
+.form-group input:not(:placeholder-shown) {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Additional input styling for better UX */
+.form-group input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.form-group input[type="number"]::-webkit-outer-spin-button,
+.form-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Selection styling */
+.form-group input::selection {
+  background: rgba(102, 126, 234, 0.3);
+  color: #ffffff;
+}
+
+/* Autofill styling */
+.form-group input:-webkit-autofill,
+.form-group input:-webkit-autofill:hover,
+.form-group input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.15) inset;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 .save-btn {
@@ -97,11 +133,12 @@
   cursor: pointer;
   transition: all 0.3s ease;
   align-self: flex-start;
+  min-width: 150px;
 }
 
 .save-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
 }
 
 .save-btn:disabled {
@@ -109,107 +146,282 @@
   cursor: not-allowed;
 }
 
-.summary-grid {
+/* Daily Summary Cards */
+.daily-summary {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1rem;
+  margin-bottom: 2rem;
 }
 
-.summary-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
+.summary-card {
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease;
 }
 
-.summary-label {
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
+.summary-card:hover {
+  transform: translateY(-4px);
 }
 
 .summary-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.summary-label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+.summary-unit {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Progress Bar */
+.progress-section {
+  margin-bottom: 2rem;
+}
+
+.progress-item {
+  margin-bottom: 1rem;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.progress-label {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.progress-value {
   font-weight: 600;
   color: white;
-  font-size: 1.1rem;
 }
 
-.empty-history {
-  text-align: center;
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Weekly Summary Section */
+.weekly-summary {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
   padding: 2rem;
-  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.empty-history p {
+.weekly-summary h3 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+}
+
+.weekly-chart {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.day-column {
+  text-align: center;
+}
+
+.day-label {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.day-bar {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  position: relative;
+  min-height: 120px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.day-fill {
+  width: 100%;
+  background: linear-gradient(to top, #667eea 0%, #764ba2 100%);
+  border-radius: 4px;
+  transition: height 0.3s ease;
+}
+
+.day-value {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+/* History Section */
+.nutrition-history {
+  margin-top: 2rem;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.history-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: white;
   margin: 0;
-  font-size: 1.1rem;
 }
 
 .history-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .history-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: background-color 0.3s ease;
 }
 
 .history-item:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .history-date {
   font-weight: 600;
   color: white;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
 }
 
 .history-nutrition {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
 }
 
-.nutrition-calories {
+.history-nutrition-item {
+  text-align: center;
+}
+
+.history-nutrition-value {
   font-weight: 600;
   color: white;
   font-size: 1.1rem;
 }
 
-.nutrition-macros {
-  font-size: 0.85rem;
+.history-nutrition-label {
+  font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.7);
+  margin-top: 0.25rem;
+}
+
+/* Empty States */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 1.1rem;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .tracker-container {
-    padding: 1.5rem;
+  .tracker-header h2 {
+    font-size: 2rem;
   }
   
-  .form-grid {
+  .nutrition-form {
     grid-template-columns: 1fr;
   }
   
-  .summary-grid {
-    grid-template-columns: 1fr;
+  .daily-summary {
+    grid-template-columns: repeat(2, 1fr);
   }
   
-  .history-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
+  .weekly-chart {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+  }
+  
+  .day-label {
+    font-size: 0.7rem;
+  }
+  
+  .day-value {
+    font-size: 0.65rem;
   }
   
   .history-nutrition {
-    align-items: flex-start;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .daily-nutrition,
+  .weekly-summary {
+    padding: 1.5rem;
+  }
+  
+  .weekly-chart {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .day-column:nth-child(n+5) {
+    display: none;
   }
 } 

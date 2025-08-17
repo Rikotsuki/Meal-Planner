@@ -204,6 +204,9 @@ export const groceryListAPI = {
 
 // Nutrition Tracking API
 export const nutritionAPI = {
+  // Test database connection
+  testConnection: () => backendAPI.get('/nutrition/test'),
+  
   // Track daily nutrition
   trackDailyNutrition: (date, nutritionData) => 
     backendAPI.post('/nutrition/daily', { date, ...nutritionData }),

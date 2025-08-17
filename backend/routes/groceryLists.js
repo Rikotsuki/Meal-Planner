@@ -165,7 +165,7 @@ router.post("/from-meal-plan/:mealPlanId", auth, async (req, res) => {
       return res.status(400).json({ message: "Invalid mealPlanId" });
     }
     if (!API_KEY) {
-      return res.status(500).json({ message: "Missing SPOONACULAR_API_KEY in env" });
+      return res.status(500).json({ message: "Missing Spoonacular API Key" });
     }
 
     const mealPlan = await MealPlan.findOne({ _id: mealPlanId, userId: req.user }).lean();

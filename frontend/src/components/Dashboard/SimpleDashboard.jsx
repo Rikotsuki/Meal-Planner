@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { mealPlanAPI, nutritionAPI, groceryListAPI, profileAPI } from '../../services/api';
+import { mealPlanAPI, groceryListAPI, profileAPI } from '../../services/api';
+import './BMICalculator.css';
+import NutritionTracker from './NutritionTracker';
 const join = (base, path) =>
   `${String(base).replace(/\/+$/,'')}/${String(path).replace(/^\/+/,'')}`;
 
@@ -140,19 +142,7 @@ const bmiCat = useMemo(() => bmiCategory(bmiResult?.bmi), [bmiResult]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [expandedPlans, setExpandedPlans] = useState(new Set());
   
-  // Nutrition Tracker State
-  const [nutritionData, setNutritionData] = useState({
-    calories: '',
-    carbs: '',
-    fat: '',
-    protein: '',
-    fiber: '',
-    sodium: '',
-    cholesterol: ''
-  });
-  const [nutritionHistory, setNutritionHistory] = useState([]);
-  const [nutritionSummary, setNutritionSummary] = useState(null);
-  const [isSavingNutrition, setIsSavingNutrition] = useState(false);
+
   
   // Grocery Lists State
   const [groceryLists, setGroceryLists] = useState([]);
@@ -262,12 +252,7 @@ const bmiCat = useMemo(() => bmiCategory(bmiResult?.bmi), [bmiResult]);
     }
   }, [activeTab]);
 
-  // Load nutrition data when tab changes
-  useEffect(() => {
-    if (activeTab === 'nutrition') {
-      fetchNutritionData();
-    }
-  }, [activeTab]);
+
 
   // Load grocery lists when tab changes
   useEffect(() => {
@@ -296,23 +281,7 @@ const bmiCat = useMemo(() => bmiCategory(bmiResult?.bmi), [bmiResult]);
     }
   };
 
-  // Fetch nutrition data
-  const fetchNutritionData = async () => {
-    try {
-      const startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-      const endDate = new Date();
-      
-      const [historyResponse, summaryResponse] = await Promise.all([
-        nutritionAPI.getNutritionHistory(startDate.toISOString(), endDate.toISOString()),
-        nutritionAPI.getNutritionSummary('week')
-      ]);
-      
-      setNutritionHistory(historyResponse.data);
-      setNutritionSummary(summaryResponse.data);
-    } catch (error) {
-      console.error('Fetch nutrition data error:', error);
-    }
-  };
+
 
   // Fetch grocery lists
   const fetchGroceryLists = async () => {
@@ -350,41 +319,7 @@ const bmiCat = useMemo(() => bmiCategory(bmiResult?.bmi), [bmiResult]);
   };
 
   // Handle nutrition input change
-  const handleNutritionChange = (field, value) => {
-    setNutritionData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
 
-  // Save nutrition data
-  const handleSaveNutrition = async (e) => {
-    e.preventDefault();
-    setIsSavingNutrition(true);
-    
-    try {
-      await nutritionAPI.trackDailyNutrition(new Date(), nutritionData);
-      
-      // Reset form
-      setNutritionData({
-        calories: '',
-        carbs: '',
-        fat: '',
-        protein: '',
-        fiber: '',
-        sodium: '',
-        cholesterol: ''
-      });
-      
-      // Refresh data
-      await fetchNutritionData();
-      alert('Nutrition data saved successfully!');
-    } catch (error) {
-      console.error('Save nutrition error:', error);
-    } finally {
-      setIsSavingNutrition(false);
-    }
-  };
 
   // Handle profile input change
   const handleProfileChange = (field, value) => {
@@ -535,82 +470,61 @@ const bmiCat = useMemo(() => bmiCategory(bmiResult?.bmi), [bmiResult]);
     switch (activeTab) {
       case 'bmi': {
         return (
-          <div style={{ color: 'white' }}>
-            <h6 style={{ marginBottom: '1.5rem', fontSize: '1.5rem' }}>Set your goal, track your progress, and watch yourself win!
-            </h6>
+          <div className="bmi-calculator">
+            <h6 className="bmi-header">Set your goal, track your progress, and watch yourself win!</h6>
       
             {/* Form */}
-<form onSubmit={computeBMI} style={{ 
-  display: 'grid', 
-  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-  gap: '1rem', 
-  marginBottom: '1.25rem'
-}}>
-  <div style={{ marginRight: '2rem' }}>
-  <label style={{ display: 'flex', flexDirection: 'column', gap: '.4rem' }}>
-    <span>Height (cm)</span>
-    <input type="number" value={bmiForm.height}
-      onChange={(e)=>updateBmi('height', e.target.value)}
-      style={{ background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', color:'white', padding:'.7rem', borderRadius:8 }} />
-  </label>
-  <label style={{ display: 'flex', flexDirection: 'column', gap: '.4rem' }}>
-    <span>Weight (kg)</span>
-    <input type="number" value={bmiForm.weight}
-      onChange={(e)=>updateBmi('weight', e.target.value)}
-      style={{ background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', color:'white', padding:'.7rem', borderRadius:8 }} />
-  </label>
-  <label style={{ display: 'flex', flexDirection: 'column', gap: '.4rem' }}>
-    <span>Age</span>
-    <input type="number" value={bmiForm.age}
-      onChange={(e)=>updateBmi('age', e.target.value)}
-      style={{ background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', color:'white', padding:'.7rem', borderRadius:8 }} />
-  </label>
-  </div>
-  <div>
-  <label style={{ display: 'flex', flexDirection: 'column', gap: '.4rem'}}>
-    <span>Gender</span>
-    <select value={bmiForm.gender} onChange={(e)=>updateBmi('gender', e.target.value)}
-      style={{ background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', color:'white', padding:'7rem',  fontSize: '1.2rem', lineHeight: '1.5' , borderRadius:8 }}>
-      <option value="male">Male</option>
-      <option value="female">Female</option>
-    </select>
-  </label>
-  <label style={{ display: 'flex', flexDirection: 'column', gap: '.4rem' }}>
-    <span>Activity</span>
-    <select value={bmiForm.activity} onChange={(e)=>updateBmi('activity', e.target.value)}
-      style={{ background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', color:'white', padding:'.7rem',fontSize: '1.2rem', lineHeight: '1.5', borderRadius:8 }}>
-      <option value="low">Low</option>
-      <option value="moderate">Moderate</option>
-      <option value="high">High</option>
-    </select>
-  </label>
-  <label style={{ display: 'flex', flexDirection: 'column', gap: '.4rem' }}>
-    <span>Goal</span>
-    <select value={bmiForm.goal} onChange={(e)=>updateBmi('goal', e.target.value)}
-      style={{ background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', color:'white', padding:'.7rem',fontSize: '1.2rem', lineHeight: '1.5', borderRadius:8 }}>
-      <option value="lose">Lose</option>
-      <option value="maintain">Maintain</option>
-      <option value="gain">Gain</option>
-    </select>
-  </label>
-  </div>
-</form>
+            <form onSubmit={computeBMI} className="bmi-form">
+              <div className="bmi-form-section">
+                <label className="bmi-form-group">
+                  <span>Height (cm)</span>
+                  <input type="number" value={bmiForm.height}
+                    onChange={(e)=>updateBmi('height', e.target.value)} />
+                </label>
+                <label className="bmi-form-group">
+                  <span>Weight (kg)</span>
+                  <input type="number" value={bmiForm.weight}
+                    onChange={(e)=>updateBmi('weight', e.target.value)} />
+                </label>
+                <label className="bmi-form-group">
+                  <span>Age</span>
+                  <input type="number" value={bmiForm.age}
+                    onChange={(e)=>updateBmi('age', e.target.value)} />
+                </label>
+              </div>
+              <div className="bmi-form-section">
+                <label className="bmi-form-group">
+                  <span>Gender</span>
+                  <select value={bmiForm.gender} onChange={(e)=>updateBmi('gender', e.target.value)}>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                </label>
+                <label className="bmi-form-group">
+                  <span>Activity</span>
+                  <select value={bmiForm.activity} onChange={(e)=>updateBmi('activity', e.target.value)}>
+                    <option value="low">Low</option>
+                    <option value="moderate">Moderate</option>
+                    <option value="high">High</option>
+                  </select>
+                </label>
+                <label className="bmi-form-group">
+                  <span>Goal</span>
+                  <select value={bmiForm.goal} onChange={(e)=>updateBmi('goal', e.target.value)}>
+                    <option value="lose">Lose</option>
+                    <option value="maintain">Maintain</option>
+                    <option value="gain">Gain</option>
+                  </select>
+                </label>
+              </div>
+            </form>
 
 {/* Calculate Button - now separate and bigger */}
 <div style={{ marginTop: '1rem', textAlign: 'center', paddingBottom:'1rem' }}>
   <button 
     type="submit"
     onClick={computeBMI}
-    style={{ 
-      background:'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
-      color:'white', 
-      border:'none', 
-      padding:'1rem 2rem', 
-      borderRadius:12, 
-      fontWeight:600,
-      fontSize: '1.1rem',
-      minWidth: '200px'
-    }}
+    className="bmi-calculate-btn"
   >
     Calculate
   </button>
@@ -619,56 +533,43 @@ const bmiCat = useMemo(() => bmiCategory(bmiResult?.bmi), [bmiResult]);
       
             {/* Results */}
             {bmiResult && (
-  <div
-    style={{
-      background: 'rgba(255,255,255,0.08)',
-      borderRadius: 12,
-      padding: '1rem',
-      border: '1px solid rgba(255,255,255,0.1)'
-    }}
-  >
-    {/* Cheerful message */}
-    <div style={{ marginBottom: '1rem', fontSize: '1rem', fontWeight: '500', color: '#ffda79' }}>
+              <div className="bmi-results">
+                {/* Cheerful message */}
+                <div className="bmi-message">
       {bmiCat === 'Underweight' && "🌱 You're lighter than average — focus on healthy nourishment!"}
       {bmiCat === 'Normal' && "💪 You're right on track! Keep up the great balance."}
       {bmiCat === 'Overweight' && "🌟 Small steps lead to big changes — you've got this!"}
       {bmiCat === 'Obese' && "❤️ Your health matters — every day is a new chance to improve."}
     </div>
 
-    {/* Results grid */}
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-        gap: '.75rem'
-      }}
-    >
-      <div>
-        <div style={{ opacity: 0.8 }}>BMI</div>
-        <div style={{ fontWeight: 700, fontSize: '1.2rem' }}>
-          {bmiResult.bmi ?? '—'}
-        </div>
-      </div>
-      <div>
-        <div style={{ opacity: 0.8 }}>Category</div>
-        <div style={{ fontWeight: 700, fontSize: '1.2rem' }}>{bmiCat || '—'}</div>
-      </div>
-      <div>
-        <div style={{ opacity: 0.8 }}>BMR</div>
-        <div style={{ fontWeight: 700, fontSize: '1.2rem' }}>{bmiResult.bmr ?? '—'}</div>
-      </div>
-      <div>
-        <div style={{ opacity: 0.8 }}>TDEE</div>
-        <div style={{ fontWeight: 700, fontSize: '1.2rem' }}>{bmiResult.tdee ?? '—'}</div>
-      </div>
-      <div>
-        <div style={{ opacity: 0.8 }}>Daily Calories</div>
-        <div style={{ fontWeight: 700, fontSize: '1.2rem' }}>
-          {bmiResult.daily ?? '—'}
-        </div>
-      </div>
+                {/* Results grid */}
+                <div className="bmi-results-grid">
+                  <div className="bmi-result-item">
+                    <div className="bmi-result-label">BMI</div>
+                    <div className="bmi-result-value">
+                      {bmiResult.bmi ?? '—'}
+                    </div>
+                  </div>
+                  <div className="bmi-result-item">
+                    <div className="bmi-result-label">Category</div>
+                    <div className="bmi-result-value">{bmiCat || '—'}</div>
+                  </div>
+                  <div className="bmi-result-item">
+                    <div className="bmi-result-label">BMR</div>
+                    <div className="bmi-result-value">{bmiResult.bmr ?? '—'}</div>
+                  </div>
+                  <div className="bmi-result-item">
+                    <div className="bmi-result-label">TDEE</div>
+                    <div className="bmi-result-value">{bmiResult.tdee ?? '—'}</div>
+                  </div>
+                  <div className="bmi-result-item">
+                    <div className="bmi-result-label">Daily Calories</div>
+                    <div className="bmi-result-value">
+                      {bmiResult.daily ?? '—'}
+                    </div>
+                  </div>
     </div>
-    <div style={{ opacity: 0.75, fontSize: '.9rem', marginTop: '.5rem' }}>
+                <div className="bmi-note">
       * “Daily Calories” reflects your goal (−500 for lose, +500 for gain).
     </div>
   </div>
@@ -993,157 +894,7 @@ const bmiCat = useMemo(() => bmiCategory(bmiResult?.bmi), [bmiResult]);
           </div>
         );
       case 'nutrition':
-        return (
-          <div style={{ color: 'white' }}>
-            <h3 style={{ marginBottom: '1.5rem', fontSize: '1.5rem' }}>Nutrition Tracker</h3>
-            
-            {/* Add Nutrition Form */}
-            <div style={{ background: 'rgba(255, 255, 255, 0.05)', borderRadius: '12px', padding: '1.5rem', marginBottom: '2rem', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <h4 style={{ margin: '0 0 1.5rem 0', fontSize: '1.3rem', fontWeight: '600' }}>Add Today's Nutrition</h4>
-              <form onSubmit={handleSaveNutrition} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Calories</label>
-                    <input
-                      type="number"
-                      value={nutritionData.calories}
-                      onChange={(e) => handleNutritionChange('calories', e.target.value)}
-                      placeholder="Enter calories"
-                      style={{ background: 'rgba(255, 255, 255, 0.1)', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: '8px', padding: '0.75rem', color: 'white', fontSize: '1rem', width: '100%', outline: 'none' }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Carbs (g)</label>
-                    <input
-                      type="number"
-                      value={nutritionData.carbs}
-                      onChange={(e) => handleNutritionChange('carbs', e.target.value)}
-                      placeholder="Enter carbs"
-                      style={{ background: 'rgba(255, 255, 255, 0.1)', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: '8px', padding: '0.75rem', color: 'white', fontSize: '1rem', width: '100%', outline: 'none' }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Fat (g)</label>
-                    <input
-                      type="number"
-                      value={nutritionData.fat}
-                      onChange={(e) => handleNutritionChange('fat', e.target.value)}
-                      placeholder="Enter fat"
-                      style={{ background: 'rgba(255, 255, 255, 0.1)', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: '8px', padding: '0.75rem', color: 'white', fontSize: '1rem', width: '100%', outline: 'none' }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Protein (g)</label>
-                    <input
-                      type="number"
-                      value={nutritionData.protein}
-                      onChange={(e) => handleNutritionChange('protein', e.target.value)}
-                      placeholder="Enter protein"
-                      style={{ background: 'rgba(255, 255, 255, 0.1)', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: '8px', padding: '0.75rem', color: 'white', fontSize: '1rem', width: '100%', outline: 'none' }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Fiber (g)</label>
-                    <input
-                      type="number"
-                      value={nutritionData.fiber}
-                      onChange={(e) => handleNutritionChange('fiber', e.target.value)}
-                      placeholder="Enter fiber"
-                      style={{ background: 'rgba(255, 255, 255, 0.1)', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: '8px', padding: '0.75rem', color: 'white', fontSize: '1rem', width: '100%', outline: 'none' }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Sodium (mg)</label>
-                    <input
-                      type="number"
-                      value={nutritionData.sodium}
-                      onChange={(e) => handleNutritionChange('sodium', e.target.value)}
-                      placeholder="Enter sodium"
-                      style={{ background: 'rgba(255, 255, 255, 0.1)', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: '8px', padding: '0.75rem', color: 'white', fontSize: '1rem', width: '100%', outline: 'none' }}
-                    />
-                  </div>
-                </div>
-                <button 
-                  type="submit" 
-                  disabled={isSavingNutrition}
-                  style={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    color: 'white',
-                    border: 'none',
-                    padding: '1rem 2rem',
-                    borderRadius: '12px',
-                    fontSize: '1.1rem',
-                    fontWeight: '600',
-                    cursor: isSavingNutrition ? 'not-allowed' : 'pointer',
-                    opacity: isSavingNutrition ? 0.6 : 1,
-                    alignSelf: 'flex-start'
-                  }}
-                >
-                  {isSavingNutrition ? 'Saving...' : 'Save Nutrition Data'}
-                </button>
-              </form>
-            </div>
-
-            {/* Nutrition Summary */}
-            {nutritionSummary && (
-              <div style={{ background: 'rgba(255, 255, 255, 0.05)', borderRadius: '12px', padding: '1.5rem', marginBottom: '2rem', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                <h4 style={{ margin: '0 0 1.5rem 0', fontSize: '1.3rem', fontWeight: '600' }}>Weekly Summary</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
-                    <span style={{ fontWeight: '500', color: 'rgba(255, 255, 255, 0.8)' }}>Average Calories</span>
-                    <span style={{ fontWeight: '600', color: 'white', fontSize: '1.1rem' }}>{nutritionSummary.averageCalories}</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
-                    <span style={{ fontWeight: '500', color: 'rgba(255, 255, 255, 0.8)' }}>Average Carbs</span>
-                    <span style={{ fontWeight: '600', color: 'white', fontSize: '1.1rem' }}>{nutritionSummary.averageCarbs}g</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
-                    <span style={{ fontWeight: '500', color: 'rgba(255, 255, 255, 0.8)' }}>Average Fat</span>
-                    <span style={{ fontWeight: '600', color: 'white', fontSize: '1.1rem' }}>{nutritionSummary.averageFat}g</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
-                    <span style={{ fontWeight: '500', color: 'rgba(255, 255, 255, 0.8)' }}>Average Protein</span>
-                    <span style={{ fontWeight: '600', color: 'white', fontSize: '1.1rem' }}>{nutritionSummary.averageProtein}g</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
-                    <span style={{ fontWeight: '500', color: 'rgba(255, 255, 255, 0.8)' }}>Average Fiber</span>
-                    <span style={{ fontWeight: '600', color: 'white', fontSize: '1.1rem' }}>{nutritionSummary.averageFiber}g</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
-                    <span style={{ fontWeight: '500', color: 'rgba(255, 255, 255, 0.8)' }}>Days Tracked</span>
-                    <span style={{ fontWeight: '600', color: 'white', fontSize: '1.1rem' }}>{nutritionSummary.totalDays}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Nutrition History */}
-            <div style={{ background: 'rgba(255, 255, 255, 0.05)', borderRadius: '12px', padding: '1.5rem', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <h4 style={{ margin: '0 0 1.5rem 0', fontSize: '1.3rem', fontWeight: '600' }}>Recent History</h4>
-              {nutritionHistory.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '2rem', color: 'rgba(255, 255, 255, 0.7)' }}>
-                  <p style={{ margin: 0, fontSize: '1.1rem' }}>No nutrition data recorded yet. Start tracking today!</p>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  {nutritionHistory.slice(0, 7).map((entry, index) => (
-                    <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
-                      <div style={{ fontWeight: '600', color: 'white' }}>{formatDate(entry.date)}</div>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.25rem' }}>
-                        <span style={{ fontWeight: '600', color: 'white', fontSize: '1.1rem' }}>{entry.nutrition?.totals?.calories || 0} cal</span>
-                        <span style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.7)' }}>
-                          C: {entry.nutrition?.totals?.carbs || 0}g | 
-                          F: {entry.nutrition?.totals?.fat || 0}g | 
-                          P: {entry.nutrition?.totals?.protein || 0}g
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        );
+        return <NutritionTracker />;
    
 
       case 'grocery':
