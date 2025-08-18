@@ -186,16 +186,19 @@ const bmiCat = useMemo(() => bmiCategory(bmiResult?.bmi), [bmiResult]);
   };
 
   const calculateMacros = () => {
-    const calories = parseInt(preferences.calories);
-    const carbs = parseInt(preferences.carbs);
-    const fat = parseInt(preferences.fat);
-    const protein = parseInt(preferences.protein);
-    
+    const carbs = Number.parseInt(preferences.carbs, 10) || 0;
+    const fat = Number.parseInt(preferences.fat, 10) || 0;
+    const protein = Number.parseInt(preferences.protein, 10) || 0;
+
     const totalMacros = carbs + fat + protein;
-    const carbPercent = Math.round((carbs / totalMacros) * 100);
-    const fatPercent = Math.round((fat / totalMacros) * 100);
-    const proteinPercent = Math.round((protein / totalMacros) * 100);
-    
+    if (!Number.isFinite(totalMacros) || totalMacros <= 0) {
+      return { carbPercent: 0, fatPercent: 0, proteinPercent: 0 };
+    }
+
+    const carbPercent = Math.round((carbs / totalMacros) * 100) || 0;
+    const fatPercent = Math.round((fat / totalMacros) * 100) || 0;
+    const proteinPercent = Math.round((protein / totalMacros) * 100) || 0;
+
     return { carbPercent, fatPercent, proteinPercent };
   };
 
