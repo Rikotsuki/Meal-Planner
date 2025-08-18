@@ -28,8 +28,23 @@ const signup = async (req, res) => {
     await user.save();
     await require("../services/emailService").sendEmail(email, emailToken);
 
+    // Issue tokens so the user is signed in immediately after signup
+    const accessToken = generateToken(user._id);
+    const refreshToken = generateToken(user._id, "7d");
+    user.refreshToken = refreshToken;
+    await user.save();
+
     res.status(201).json({
       message: "User created successfully",
+      accessToken,
+      refreshToken,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        emailVerifiedAt: user.emailVerifiedAt
+      }
     });
   } catch (error) {
     console.error("Signup error:", error);
