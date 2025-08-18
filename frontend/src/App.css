@@ -1,3 +1,7 @@
+*{
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
+}
 .App {
   /* text-align: center; */
 }

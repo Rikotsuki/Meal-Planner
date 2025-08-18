@@ -755,7 +755,7 @@ const bmiCat = useMemo(() => bmiCategory(bmiResult?.bmi), [bmiResult]);
                 </div>
 
                                   <div>
-                    <h4 style={{ margin: '0 0 1.5rem 0', fontSize: '1.2rem', fontWeight: '600' }}>Recommended Recipes</h4>
+                    <h4 style={{ margin: '0 0 1.5rem 0', fontSize: '1.2rem', fontWeight: '600' }}>Recommended Recipes...</h4>
                     <p style={{ margin: '0 0 1rem 0', fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.8)', fontStyle: 'italic' }}>
                       💡 Click any recipe to view details. Only meal names will be saved to your plan to save database space.
                     </p>
@@ -1369,9 +1369,9 @@ const bmiCat = useMemo(() => bmiCategory(bmiResult?.bmi), [bmiResult]);
             <button
               onClick={closeRecipeModal}
               style={{
-                position: 'absolute',
+                position: 'sticky',
                 top: '1rem',
-                right: '1rem',
+                left: '92%',
                 background: 'rgba(0, 0, 0, 0.5)',
                 color: 'white',
                 border: 'none',
