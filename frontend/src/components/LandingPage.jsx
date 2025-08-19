@@ -13,7 +13,7 @@ const LandingPage = ({ isAuthenticated, user, onLoginClick, onSignUpClick, onLog
       <header className="header">
         <div className="container">
           <div className="logo">
-            <h1 onClick={handleLogoClick} className="clickable-logo">Meal Planner</h1>
+            <h1 onClick={handleLogoClick} className="clickable-logo">PrepPal</h1>
           </div>
           <nav className="nav">
             <a href="#how-it-works">How It Works</a>
@@ -42,7 +42,7 @@ const LandingPage = ({ isAuthenticated, user, onLoginClick, onSignUpClick, onLog
               Put your diet on <span className="highlight">autopilot.</span>
             </h1>
             <p className="hero-subtitle">
-              Meal Planner creates personalized meal plans based on your food preferences, 
+              PrepPal creates personalized meal plans based on your food preferences, 
               budget, and schedule. Reach your diet and nutritional goals with our calorie 
               calculator, weekly meal plans, grocery lists and more.
             </p>
