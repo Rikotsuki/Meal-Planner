@@ -214,7 +214,7 @@ const LandingPage = ({ isAuthenticated, user, onLoginClick, onSignUpClick, onLog
       </section>
 
       {/* CTA Section */}
-      <section className="cta">
+      <section className="cta" style={{background: "#FFFFFF" }} >
         <div style={{background: "#FFFFFF" }}>
           <h2>Ready to transform your eating habits?</h2>
           <p>Join thousands of users who have already improved their nutrition and simplified their meal planning.</p>
