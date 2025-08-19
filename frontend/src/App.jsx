@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import './App.css'
 import LandingPage from './components/LandingPage'
 import AuthContainer from './components/Auth/AuthContainer'
 import SimpleDashboard from './components/Dashboard/SimpleDashboard'
+import HowItWorks from './components/HowItWorks'
+import SupportedDiets from './components/SupportedDiets'
+import ForProfessionals from './components/ForProfessinals';
+import NutrientGlossary from './components/NutrientGlossary';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -10,7 +15,6 @@ function App() {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    // Check if user is already logged in
     const token = localStorage.getItem('token')
     const savedUser = localStorage.getItem('user')
     
@@ -20,7 +24,6 @@ function App() {
         setUser(JSON.parse(savedUser))
       } catch (error) {
         console.error('Error parsing user data:', error)
-        // Clear invalid data
         localStorage.removeItem('token')
         localStorage.removeItem('user')
         localStorage.removeItem('refreshToken')
@@ -49,43 +52,55 @@ function App() {
     setShowAuth(false)
   }
 
-  if (showAuth) {
-    return (
-      <div className="App">
-        <AuthContainer 
-          onAuthSuccess={handleAuthSuccess}
-          onBackToLanding={handleBackToLanding}
-          isAuthenticated={isAuthenticated}
-          user={user}
-          onLogout={handleLogout}
-        />
-      </div>
-    )
-  }
-
-  if (isAuthenticated) {
-    return (
-      <div className="App">
-        <SimpleDashboard 
-          user={user}
-          onLogout={handleLogout}
-        />
-      </div>
-    )
-  }
-
   return (
-    <div className="App">
-      <LandingPage 
-        isAuthenticated={isAuthenticated}
-        user={user}
-        onLoginClick={handleAuthClick}
-        onSignUpClick={handleAuthClick}
-        onLogout={handleLogout}
-      />
-    </div>
+    <Router>
+      <div className="App">
+        
+
+        <Routes>
+          <Route
+            path="/"
+            element={
+              showAuth ? (
+                <AuthContainer
+                  onAuthSuccess={handleAuthSuccess}
+                  onBackToLanding={handleBackToLanding}
+                  isAuthenticated={isAuthenticated}
+                  user={user}
+                  onLogout={handleLogout}
+                />
+              ) : isAuthenticated ? (
+                <SimpleDashboard 
+                  user={user}
+                  onLogout={handleLogout}
+                />
+              ) : (
+                <LandingPage 
+                  isAuthenticated={isAuthenticated}
+                  user={user}
+                  onLoginClick={handleAuthClick}
+                  onSignUpClick={handleAuthClick}
+                  onLogout={handleLogout}
+                />
+              )
+            }
+          />
+
+          {/* Corrected paths */}
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/supported-diets" element={<SupportedDiets />} />
+          <Route path="/for-professionals" element={<ForProfessionals />} />
+          <Route path="/nutrient-glossary" element={<NutrientGlossary />} />
+
+
+
+          
+        </Routes>
+      </div>
+    </Router>
   )
 }
 
 export default App
+
 
