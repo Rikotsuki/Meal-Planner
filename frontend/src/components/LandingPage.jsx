@@ -1,4 +1,5 @@
 import React from 'react'
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import './LandingPage.css'
 
 const LandingPage = ({ isAuthenticated, user, onLoginClick, onSignUpClick, onLogout }) => {
@@ -16,9 +17,9 @@ const LandingPage = ({ isAuthenticated, user, onLoginClick, onSignUpClick, onLog
             <h1 onClick={handleLogoClick} className="clickable-logo">PrepPal</h1>
           </div>
           <nav className="nav">
-            <a href="#how-it-works">How It Works</a>
-            <a href="#articles">Articles</a>
-            <a href="#features">Features</a>
+            <Link to="/how-it-works">How It Works</Link>
+            <Link to="/supported-diets">Supported Diets</Link>
+            <Link to="/for-professionals">For Professionals</Link>
             {isAuthenticated ? (
               <div className="user-menu">
                 <span className="user-greeting">Hello, {user?.name || 'User'}!</span>
@@ -224,8 +225,66 @@ const LandingPage = ({ isAuthenticated, user, onLoginClick, onSignUpClick, onLog
           )}
         </div>
       </section>
+
+{/* Footer Section */}
+<footer
+      style={{
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+       color: 'white',
+  padding: '4rem 0 2rem'
+      }}>
+        <div className="container">
+          <div className="footer-content">
+            <div className="footer-logo">
+              <h2>PrepPal</h2>
+              <p>Your personalized nutrition assistant</p>
+            </div>
+            
+            <div className="footer-links">
+              <div className="link-group">
+                <h3>Nutrition</h3>
+                <Link to = "/nutrient-glossary">Nutrient Glossary</Link>
+              </div>
+              
+              <div className="link-group">
+                <h3>About & Help</h3>
+                <a href="#about">About Us</a>
+                <a href="#blog">Contact Us</a>
+                <a href="#careers">FAQ</a>
+              </div>
+              
+              <div className="link-group">
+                <h3>Legal</h3>
+                <a href="#privacy">Privacy Policy</a>
+                <a href="#terms">Terms of Service</a>
+              </div>
+            </div>
+          </div>
+          
+          <div className="footer-bottom">
+            <p>© {new Date().getFullYear()} PrepPal. All rights reserved.</p>
+            <div className="social-links">
+              <a href="#facebook" aria-label="Facebook">
+                <i className="fab fa-facebook"></i>
+              </a>
+              <a href="#twitter" aria-label="Twitter">
+                <i className="fab fa-twitter"></i>
+              </a>
+              <a href="#instagram" aria-label="Instagram">
+                <i className="fab fa-instagram"></i>
+              </a>
+              <a href="#linkedin" aria-label="LinkedIn">
+                <i className="fab fa-linkedin"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+
     </div>
   )
 }
 
 export default LandingPage 
+
