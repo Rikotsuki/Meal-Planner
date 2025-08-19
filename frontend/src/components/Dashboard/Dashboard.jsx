@@ -52,7 +52,7 @@ const tabs = [
       <header className="dashboard-header">
         <div className="dashboard-header-content">
           <div className="dashboard-logo">
-            <h1>Meal Planner</h1>
+            <h1>PrepPal</h1>
           </div>
           <div className="dashboard-user-info">
             <span className="user-greeting">Welcome, {user?.name || 'User'}!</span>
