@@ -122,7 +122,7 @@ const AuthContainer = ({ onAuthSuccess, onBackToLanding, isAuthenticated, user, 
       <header className="header">
         <div className="container">
           <div className="logo">
-            <h1 onClick={onBackToLanding} className="clickable-logo">Meal Planner</h1>
+            <h1 onClick={onBackToLanding} className="clickable-logo">PrepPal</h1>
           </div>
           <nav className="nav">
             <a href="#how-it-works">How It Works</a>
