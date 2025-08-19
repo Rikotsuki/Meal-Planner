@@ -3,6 +3,7 @@ import './App.css'
 import LandingPage from './components/LandingPage'
 import AuthContainer from './components/Auth/AuthContainer'
 import SimpleDashboard from './components/Dashboard/SimpleDashboard'
+import { Link } from 'react-router-dom'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -10,7 +11,6 @@ function App() {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    // Check if user is already logged in
     const token = localStorage.getItem('token')
     const savedUser = localStorage.getItem('user')
     
@@ -20,7 +20,6 @@ function App() {
         setUser(JSON.parse(savedUser))
       } catch (error) {
         console.error('Error parsing user data:', error)
-        // Clear invalid data
         localStorage.removeItem('token')
         localStorage.removeItem('user')
         localStorage.removeItem('refreshToken')
@@ -59,6 +58,13 @@ function App() {
           user={user}
           onLogout={handleLogout}
         />
+
+        {/* Added Links */}
+        <nav className="extra-links">
+          <Link to="/how-it-works">How It Works</Link> |{" "}
+          <Link to="/supported-diets">Supported Diets</Link> |{" "}
+          <Link to="/for-professionals">For Professionals</Link>
+        </nav>
       </div>
     )
   }
@@ -70,6 +76,13 @@ function App() {
           user={user}
           onLogout={handleLogout}
         />
+
+        {/* Added Links */}
+        <nav className="extra-links">
+          <Link to="/how-it-works">How It Works</Link> |{" "}
+          <Link to="/supported-diets">Supported Diets</Link> |{" "}
+          <Link to="/for-professionals">For Professionals</Link>
+        </nav>
       </div>
     )
   }
@@ -83,8 +96,16 @@ function App() {
         onSignUpClick={handleAuthClick}
         onLogout={handleLogout}
       />
+
+      {/* Added Links */}
+      <nav className="extra-links">
+        <Link to="/how-it-works">How It Works</Link> |{" "}
+        <Link to="/supported-diets">Supported Diets</Link> |{" "}
+        <Link to="/for-professionals">For Professionals</Link>
+      </nav>
     </div>
   )
 }
 
 export default App
+
