@@ -7,7 +7,6 @@ import SimpleDashboard from './components/Dashboard/SimpleDashboard'
 import HowItWorks from './components/HowItWorks'
 import SupportedDiets from './components/SupportedDiets'
 import ForProfessionals from './components/ForProfessinals';
-import NutrientGlossary from './components/NutrientGlossary';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -90,7 +89,6 @@ function App() {
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/supported-diets" element={<SupportedDiets />} />
           <Route path="/for-professionals" element={<ForProfessionals />} />
-          <Route path="/nutrient-glossary" element={<NutrientGlossary />} />
 
 
 
