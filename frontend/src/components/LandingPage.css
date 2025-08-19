@@ -324,17 +324,17 @@ body {
 
 /* CTA Section */
 .cta {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: white;
   padding: 4rem 0;
   text-align: center;
-  color: white;
+  color: black;
 }
 
 .cta h2 {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: white;
+  color: black;
 }
 
 .cta p {
@@ -344,6 +344,7 @@ body {
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  color: black;
 }
 
 
